@@ -1,0 +1,26 @@
+config_file_name: /mnt/e/projects/Cquirrel_implement/resource/config/config_2_insertOnly.ini
+data_file_path_prefix: /mnt/e/projects/Cquirrel_implement/resource/tpch/2
+check the lines number of files:
+/mnt/e/projects/Cquirrel_implement/resource/tpch/2/customer.tbl has 300000 lines
+/mnt/e/projects/Cquirrel_implement/resource/tpch/2/lineitem.tbl has 11997996 lines
+/mnt/e/projects/Cquirrel_implement/resource/tpch/2/nation.tbl has 25 lines
+/mnt/e/projects/Cquirrel_implement/resource/tpch/2/orders.tbl has 3000000 lines
+/mnt/e/projects/Cquirrel_implement/resource/tpch/2/part.tbl has 400000 lines
+/mnt/e/projects/Cquirrel_implement/resource/tpch/2/partsupp.tbl has 1600000 lines
+/mnt/e/projects/Cquirrel_implement/resource/tpch/2/region.tbl has 5 lines
+/mnt/e/projects/Cquirrel_implement/resource/tpch/2/supplier.tbl has 20000 lines
+*************************************
+count: 11997996
+delete_count: 0
+customer_count: 299950
+customer_delete_count: 0
+nation_count: 25
+nation_delete_count: 0
+orders_count: 2999499
+orders_delete_count: 0
+
+total count: 15297470
+output file lines number: 15297470
+finished: /mnt/e/projects/Cquirrel_implement/resource/config/config_2_insertOnly.ini
+outputfile: /mnt/e/projects/Cquirrel_implement/resource/tpch/2/input_data_insertOnly_2.csv
+cpu time: 238.94085836410522

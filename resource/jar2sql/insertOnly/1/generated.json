@@ -1,0 +1,182 @@
+{
+  "AggregateProcessFunction": [
+    {
+      "this_key": [
+        "custkey",
+        "c_name",
+        "c_acctbal",
+        "c_phone",
+        "n_name",
+        "c_address",
+        "c_comment"
+      ],
+      "AggregateValue": [
+        {
+          "value_type": "Double",
+          "name": "revenue",
+          "aggregation": "+",
+          "value": {
+            "right_field": {
+              "right_field": {
+                "name": "l_discount",
+                "type": "attribute",
+                "relation": "lineitem"
+              },
+              "left_field": {
+                "var_type": "int",
+                "type": "constant",
+                "value": 1
+              },
+              "type": "expression",
+              "operator": "-"
+            },
+            "left_field": {
+              "name": "l_extendedprice",
+              "type": "attribute",
+              "relation": "lineitem"
+            },
+            "type": "expression",
+            "operator": "*"
+          }
+        }
+      ],
+      "output_key": [
+        "custkey",
+        "c_name",
+        "c_acctbal",
+        "c_phone",
+        "n_name",
+        "c_address",
+        "c_comment"
+      ],
+      "name": "QAggregate0",
+      "delta_output": true
+    }
+  ],
+  "join_structure": [
+    {
+      "primary": "orders",
+      "foreign": "lineitem"
+    },
+    {
+      "primary": "customer",
+      "foreign": "orders"
+    },
+    {
+      "primary": "nation",
+      "foreign": "customer"
+    }
+  ],
+  "RelationProcessFunction": [
+    {
+      "this_key": [
+        "orderkey"
+      ],
+      "is_Last": true,
+      "select_conditions": {
+        "values": [
+          {
+            "right_field": {
+              "var_type": "varchar",
+              "type": "constant",
+              "value": "R"
+            },
+            "left_field": {
+              "name": "l_returnflag",
+              "type": "attribute",
+              "relation": "lineitem"
+            },
+            "type": "expression",
+            "operator": "=="
+          }
+        ],
+        "operator": "&&"
+      },
+      "name": "Qlineitem",
+      "next_key": [
+        "custkey",
+        "c_name",
+        "c_acctbal",
+        "c_phone",
+        "n_name",
+        "c_address",
+        "c_comment"
+      ],
+      "is_Root": true,
+      "child_nodes": 1,
+      "relation": "lineitem"
+    },
+    {
+      "this_key": [
+        "nationkey"
+      ],
+      "is_Last": true,
+      "name": "Qnation",
+      "next_key": [
+        "nationkey"
+      ],
+      "is_Root": false,
+      "child_nodes": 0,
+      "relation": "nation"
+    },
+    {
+      "this_key": [
+        "custkey"
+      ],
+      "is_Last": true,
+      "select_conditions": {
+        "values": [
+          {
+            "right_field": {
+              "var_type": "Date",
+              "type": "constant",
+              "value": "1993-10-01"
+            },
+            "left_field": {
+              "name": "o_orderdate",
+              "type": "attribute",
+              "relation": "orders"
+            },
+            "type": "expression",
+            "operator": ">="
+          },
+          {
+            "right_field": {
+              "var_type": "Date",
+              "type": "constant",
+              "value": "1994-01-01"
+            },
+            "left_field": {
+              "name": "o_orderdate",
+              "type": "attribute",
+              "relation": "orders"
+            },
+            "type": "expression",
+            "operator": "<"
+          }
+        ],
+        "operator": "&&"
+      },
+      "name": "Qorders",
+      "next_key": [
+        "orderkey"
+      ],
+      "is_Root": false,
+      "child_nodes": 1,
+      "relation": "orders"
+    },
+    {
+      "this_key": [
+        "nationkey"
+      ],
+      "is_Last": true,
+      "name": "Qcustomer",
+      "next_key": [
+        "custkey"
+      ],
+      "is_Root": false,
+      "child_nodes": 1,
+      "relation": "customer"
+    }
+  ]
+}

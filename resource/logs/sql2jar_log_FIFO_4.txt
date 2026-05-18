@@ -1,0 +1,1 @@
+config_file_name: /mnt/e/projects/Cquirrel_implement/resource/config/config_4_FIFO.ini

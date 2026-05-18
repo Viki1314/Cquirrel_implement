@@ -1,0 +1,117 @@
+config_file_name: /mnt/e/projects/Cquirrel_implement/resource/config/config_4_InsertOnly.ini
+codegen command: java -jar /mnt/e/projects/Cquirrel_implement/resource/codegen.jar -j /mnt/e/projects/Cquirrel_implement/resource/jar2sql/insertOnly/4/generated.json -g /mnt/e/projects/Cquirrel_implement/resource/jar2sql/insertOnly/4 -i file:///mnt/e/projects/Cquirrel_implement/resource/tpch/4/input_data_insertOnly_4.csv -o file:///mnt/e/projects/Cquirrel_implement/resource/flink_result/4/flink_output_data_insertOnly_4.csv -s file  -q "select c_custkey, c_name, sum(l_extendedprice * (1 - l_discount)) as revenue, c_acctbal, n_name, c_address, c_phone, c_comment from customer, orders, lineitem, nation where c_custkey = o_custkey and l_orderkey = o_orderkey and o_orderdate >= date '1993-10-01' and o_orderdate < date '1994-01-01' and l_returnflag = 'R' and c_nationkey = n_nationkey group by c_custkey, c_name, c_acctbal, c_phone, n_name, c_address, c_comment order by revenue desc;"
+codegen_log_result: 
+Cquirrel -- CodeGen
+
+select c_custkey, c_name, sum(l_extendedprice * (1 - l_discount)) as revenue, c_acctbal, n_name, c_address, c_phone, c_comment from customer, orders, lineitem, nation where c_custkey = o_custkey and l_orderkey = o_orderkey and o_orderdate >= date '1993-10-01' and o_orderdate < date '1994-01-01' and l_returnflag = 'R' and c_nationkey = n_nationkey group by c_custkey, c_name, c_acctbal, c_phone, n_name, c_address, c_comment order by revenue desc;
+SELECT c_custkey, c_name
+	, sum(l_extendedprice * (1 - l_discount)) AS revenue
+	, c_acctbal, n_name, c_address, c_phone, c_comment
+FROM customer, orders, lineitem, nation
+WHERE c_custkey = o_custkey
+	AND l_orderkey = o_orderkey
+	AND o_orderdate >= DATE '1993-10-01'
+	AND o_orderdate < DATE '1994-01-01'
+	AND l_returnflag = 'R'
+	AND c_nationkey = n_nationkey
+GROUP BY c_custkey, c_name, c_acctbal, c_phone, n_name, c_address, c_comment
+ORDER BY revenue DESC;
+size is:1
+groupByAttribute: [c_custkey, c_name, c_acctbal, c_phone, n_name, c_address, c_comment]
+aggregation: [sum(l_extendedprice * (1 - l_discount))]
+table:[lineitem, nation, orders, customer]
+subqueryString: null
+c_custkey = o_custkey
+	AND l_orderkey = o_orderkey
+	AND o_orderdate >= DATE '1993-10-01'
+	AND o_orderdate < DATE '1994-01-01'
+	AND l_returnflag = 'R'
+	AND c_nationkey = n_nationkey
+c_phone false 
+c_name false 
+n_name false 
+c_comment false 
+c_acctbal false 
+c_address false 
+sum(l_extendedprice * (1 - l_discount)) AS revenue true sum(l_extendedprice * (1 - l_discount))
+c_custkey false 
+{null=nation}
+Tables : [customer, orders, lineitem, nation]
+Manipulation : Select
+fields : [UNKNOWN.c_custkey, UNKNOWN.c_name, UNKNOWN.l_extendedprice, UNKNOWN.l_discount, UNKNOWN.c_acctbal, UNKNOWN.n_name, UNKNOWN.c_address, UNKNOWN.c_phone, UNKNOWN.c_comment, UNKNOWN.o_custkey, UNKNOWN.l_orderkey, UNKNOWN.o_orderkey, UNKNOWN.o_orderdate, UNKNOWN.l_returnflag, UNKNOWN.c_nationkey, UNKNOWN.n_nationkey]
+Running mvn package -DskipTests -f /mnt/e/projects/Cquirrel_implement/resource/jar2sql/insertOnly/4/generated-code/pom.xml:
+
+[[1;34mINFO[m] Scanning for projects...
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m----------------------< [0;36morg.hkust:generated-code[0;1m >----------------------[m
+[[1;34mINFO[m] [1mBuilding generated-code 1.0-SNAPSHOT[m
+[[1;34mINFO[m] [1m--------------------------------[ jar ]---------------------------------[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-resources-plugin:2.6:resources[m [1m(default-resources)[m @ [36mgenerated-code[0;1m ---[m
+[[1;34mINFO[m] Using 'UTF-8' encoding to copy filtered resources.
+[[1;34mINFO[m] skip non existing resourceDirectory /mnt/e/projects/Cquirrel_implement/resource/jar2sql/insertOnly/4/generated-code/src/main/resources
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-compiler-plugin:3.1:compile[m [1m(default-compile)[m @ [36mgenerated-code[0;1m ---[m
+[[1;34mINFO[m] Nothing to compile - all classes are up to date
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mscala-maven-plugin:3.3.2:compile[m [1m(default)[m @ [36mgenerated-code[0;1m ---[m
+[[1;34mINFO[m] /mnt/e/projects/Cquirrel_implement/resource/jar2sql/insertOnly/4/generated-code/src/main/scala:-1: info: compiling
+[[1;34mINFO[m] Compiling 6 source files to /mnt/e/projects/Cquirrel_implement/resource/jar2sql/insertOnly/4/generated-code/target/classes at 1779074151213
+[[1;34mINFO[m] prepare-compile in 2 s
+[[1;34mINFO[m] compile in 10 s
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-resources-plugin:2.6:testResources[m [1m(default-testResources)[m @ [36mgenerated-code[0;1m ---[m
+[[1;34mINFO[m] Using 'UTF-8' encoding to copy filtered resources.
+[[1;34mINFO[m] skip non existing resourceDirectory /mnt/e/projects/Cquirrel_implement/resource/jar2sql/insertOnly/4/generated-code/src/test/resources
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-compiler-plugin:3.1:testCompile[m [1m(default-testCompile)[m @ [36mgenerated-code[0;1m ---[m
+[[1;34mINFO[m] No sources to compile
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-surefire-plugin:2.21.0:test[m [1m(default-test)[m @ [36mgenerated-code[0;1m ---[m
+[[1;34mINFO[m] Tests are skipped.
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-jar-plugin:2.4:jar[m [1m(default-jar)[m @ [36mgenerated-code[0;1m ---[m
+[[1;34mINFO[m] Building jar: /mnt/e/projects/Cquirrel_implement/resource/jar2sql/insertOnly/4/generated-code/target/generated-code-1.0-SNAPSHOT.jar
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-assembly-plugin:2.4:single[m [1m(default)[m @ [36mgenerated-code[0;1m ---[m
+[[1;34mINFO[m] Building jar: /mnt/e/projects/Cquirrel_implement/resource/jar2sql/insertOnly/4/generated-code/target/generated-code-1.0-SNAPSHOT-jar-with-dependencies.jar
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] [1;32mBUILD SUCCESS[m
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] Total time:  19.501 s
+[[1;34mINFO[m] Finished at: 2026-05-18T11:16:06+08:00
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+Errors of mvn package -DskipTests -f /mnt/e/projects/Cquirrel_implement/resource/jar2sql/insertOnly/4/generated-code/pom.xml (if any):
+
+
+
+
+information data: {
+  "binary": [
+    "c_nationkey = n_nationkey",
+    "c_custkey = o_custkey",
+    "l_orderkey = o_orderkey"
+  ],
+  "aggregation": [
+    "revenue"
+  ],
+  "unary": [
+    {
+      "lineitem": [
+        "l_returnflag = 'R'"
+      ]
+    },
+    {
+      "orders": [
+        "o_orderdate >= DATE '1993-10-01'",
+        "o_orderdate < DATE '1994-01-01'"
+      ]
+    }
+  ],
+  "relations": [
+    "lineitem",
+    "nation",
+    "orders",
+    "customer"
+  ]
+}

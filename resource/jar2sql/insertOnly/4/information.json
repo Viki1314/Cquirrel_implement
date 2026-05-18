@@ -1,0 +1,29 @@
+{
+  "binary": [
+    "c_nationkey = n_nationkey",
+    "c_custkey = o_custkey",
+    "l_orderkey = o_orderkey"
+  ],
+  "aggregation": [
+    "revenue"
+  ],
+  "unary": [
+    {
+      "lineitem": [
+        "l_returnflag = 'R'"
+      ]
+    },
+    {
+      "orders": [
+        "o_orderdate >= DATE '1993-10-01'",
+        "o_orderdate < DATE '1994-01-01'"
+      ]
+    }
+  ],
+  "relations": [
+    "lineitem",
+    "nation",
+    "orders",
+    "customer"
+  ]
+}
