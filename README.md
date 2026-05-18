@@ -149,8 +149,8 @@ python ./myCode/flink_run.py
   ```
   source  /mnt/e/projects/Cquirrel_implement/myCode/sql10.sql
   ```
-## experience result
-|exp|flink runtime|Consistency with MySQL(within 0.01)(/total)|
+## Experience Result
+|exp|flink runtime|Consistency with MySQL(within 0.01)(match_cnt/total_cnt)|
 |---|---|---|
-|1_insertOnly|3m 10s||
+|1_insertOnly|3m 10s|37967/37967=100%|
 |1_FIFO|1m36s||

@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS flink_sql10 (
     flink_timestamp BIGINT NOT NULL
 );
 
+
 TRUNCATE TABLE flink_sql10;
 
 LOAD DATA INFILE '/mnt/e/projects/Cquirrel_implement/resource/flink_result/1/flink2mysql_data_insertOnly_1.csv'
