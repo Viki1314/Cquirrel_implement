@@ -110,28 +110,47 @@ use `resource/codegen.jar` to transfer sql query to `generated-code-1.0-SNAPSHOT
   ```
 ### Boot the Apache Flink
 1. Download the Apache Flink and unzip the package into your computer. 
-2. Change the directory into `flink-1.11.2`, and start the flink cluster.  
+2. Change the directory into `flink-1.11.2`, and start the flink cluster. If flink starts successfully, [http://localhost:8081](http://localhost:8081/#/overview) will show overview of flink and details of running tasks.
   ```bash
-  cd /mnt/e/software/flink1/flink-1.11.2/flink-1.11.2
+  cd /mnt/e/software/flink1/flink-1.11.2
   bash bin/start-cluster.sh
   ```
-3. run flink
+3. run jar on flink through `./myCode/flink_run.py`:
 ```bash
 /mnt/e/software/flink1/flink-1.11.2/bin/flink run /mnt/d/SCUT/HK_Msc/HKUST_IT/ip_flink/Cquirrel_implement/app/generated-code/target/generated-code-1.0-SNAPSHOT-jar-with-dependencies.jar
+
+python ./myCode/flink_run.py
 ```
 ### Clean output data
 
 ### Prepare mysql
 1. login mysql:
 `sudo mysql -u root -p`
-2. create 3 databases;
+2. create 6 databases;
   ```sql
   CREATE DATABASE tpch1;
   CREATE DATABASE tpch2;
   CREATE DATABASE tpch4;
+  CREATE DATABASE tpch1_FIFO;
+  CREATE DATABASE tpch2_FIFO;
+  CREATE DATABASE tpch4_FIFO;
   show databases;
   use tpch1;
+  use tpch1_FIFO;
   ```
   3. create tables in mysql:
   `source /mnt/e/projects/Cquirrel_implement/myCode/tpch_schema.sql`
   4. load tpch data:
+  ```
+  source /mnt/e/projects/Cquirrel_implement/myCode/tpch1_insertOnly.sql
+  source /mnt/e/projects/Cquirrel_implement/myCode/tpch1_FIFO.sql
+  ```
+  5. run sql10 on mysql.
+  ```
+  source  /mnt/e/projects/Cquirrel_implement/myCode/sql10.sql
+  ```
+## experience result
+|exp|flink runtime|Consistency with MySQL(within 0.01)(/total)|
+|---|---|---|
+|1_insertOnly|3m 10s||
+|1_FIFO|1m36s||

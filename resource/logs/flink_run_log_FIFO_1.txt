@@ -1,0 +1,8 @@
+flink run command: /mnt/e/software/flink1/flink-1.11.2/bin/flink run /mnt/e/projects/Cquirrel_implement/resource/jar2sql/FIFO/1/generated-code/target/generated-code-1.0-SNAPSHOT-jar-with-dependencies.jar
+Job has been submitted with JobID 4d3a81ba18378c3ff17bafb5d287d5bd
+Program execution finished
+Job with JobID 4d3a81ba18378c3ff17bafb5d287d5bd has finished.
+Job Runtime: 96679 ms
+
+
+================ Flink 任务提交并执行成功 ================

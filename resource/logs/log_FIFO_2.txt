@@ -1,0 +1,33 @@
+config_file_name: /mnt/e/projects/Cquirrel_implement/resource/config/config_2_FIFO.ini
+data_file_path_prefix: /mnt/e/projects/Cquirrel_implement/resource/tpch/2
+check the lines number of files:
+/mnt/e/projects/Cquirrel_implement/resource/tpch/2/customer.tbl has 300000 lines
+/mnt/e/projects/Cquirrel_implement/resource/tpch/2/lineitem.tbl has 11997996 lines
+/mnt/e/projects/Cquirrel_implement/resource/tpch/2/nation.tbl has 25 lines
+/mnt/e/projects/Cquirrel_implement/resource/tpch/2/orders.tbl has 3000000 lines
+/mnt/e/projects/Cquirrel_implement/resource/tpch/2/part.tbl has 400000 lines
+/mnt/e/projects/Cquirrel_implement/resource/tpch/2/partsupp.tbl has 1600000 lines
+/mnt/e/projects/Cquirrel_implement/resource/tpch/2/region.tbl has 5 lines
+/mnt/e/projects/Cquirrel_implement/resource/tpch/2/supplier.tbl has 20000 lines
+*************************************
+count: 11997996
+delete_count: 9597996.0
+customer_count: 299950
+customer_delete_count: 239950
+nation_count: 25
+nation_delete_count: 20
+orders_count: 2999499
+orders_delete_count: 2399499
+
+total count: 27534935.0
+output file lines number: 27534935
+finished: /mnt/e/projects/Cquirrel_implement/resource/config/config_2_FIFO.ini
+outputfile: /mnt/e/projects/Cquirrel_implement/resource/tpch/2/input_data_FIFO_2.csv
+
+=== Save Window Data===
+window folder path: /mnt/e/projects/Cquirrel_implement/resource/tpch/2/window_data
+save lineitem_window.tbl with 2400000 lines
+save orders_window.tbl with 600000 lines
+save customer_window.tbl with 60000 lines
+save nation_window.tbl with 5 lines
+cpu time: 21923.399424791336

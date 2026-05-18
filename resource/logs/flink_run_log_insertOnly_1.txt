@@ -1,0 +1,8 @@
+flink run command: /mnt/e/software/flink1/flink-1.11.2/bin/flink run /mnt/e/projects/Cquirrel_implement/resource/jar2sql/insertOnly/1/generated-code/target/generated-code-1.0-SNAPSHOT-jar-with-dependencies.jar
+Job has been submitted with JobID 13a127458ec50091200daf60ca589848
+Program execution finished
+Job with JobID 13a127458ec50091200daf60ca589848 has finished.
+Job Runtime: 204717 ms
+
+
+================ Flink 任务提交并执行成功 ================
