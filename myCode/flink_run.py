@@ -5,7 +5,8 @@ FLINK_HOME = "/mnt/e/software/flink1/flink-1.11.2/bin/flink"
 CONFIG_FOLDER_PATH = "/mnt/e/projects/Cquirrel_implement/resource/config"
 # read config file to get the sql content
 conf = configparser.ConfigParser()
-config_file_name = "config_1_FIFO.ini"
+config_file_name = "config_2_InsertOnly.ini"
+isSerial=True
 print(config_file_name)
 if not os.path.exists(os.path.join(CONFIG_FOLDER_PATH, config_file_name)):
     raise FileNotFoundError('config file not found.')
@@ -17,7 +18,10 @@ SF = config.get('ScaleFactor')
 
 # log
 log_folder_path = "/mnt/e/projects/Cquirrel_implement/resource/logs"
-log_file_path = os.path.join(log_folder_path, "flink_run_log_{}_{}.txt".format(MODE, SF))
+if isSerial:
+    log_file_path = os.path.join(log_folder_path, "flink_run_log_{}_{}_serial.txt".format(MODE, SF))
+else: 
+    log_file_path = os.path.join(log_folder_path, "flink_run_log_{}_{}.txt".format(MODE, SF))
 
 jar_file_path = "/mnt/e/projects/Cquirrel_implement/resource/jar2sql/{}/{}/generated-code/target/generated-code-1.0-SNAPSHOT-jar-with-dependencies.jar".format(MODE, SF)
 cmd_str = FLINK_HOME + " run "+ jar_file_path

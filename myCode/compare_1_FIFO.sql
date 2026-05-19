@@ -58,3 +58,11 @@ from flink_sql10 t1 right join sql10 t2 on
     TRIM(t1.c_comment) = TRIM(t2.c_comment) and abs(t1.revenue - t2.revenue) < 0.02
 ;
 
+SELECT 
+    *
+FROM 
+    sql10
+INTO OUTFILE '/mnt/e/projects/Cquirrel_implement/resource/mysql_1_FIFO.csv'
+FIELDS TERMINATED BY ',' 
+OPTIONALLY ENCLOSED BY '"'
+LINES TERMINATED BY '\n';

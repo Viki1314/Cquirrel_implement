@@ -7,7 +7,7 @@ CONFIG_PARA = ['mode', 'scalefactor', 'islineitem',
 TABLES_FOLDER_PATH = '/mnt/e/projects/Cquirrel_implement/resource/tpch'
 CONFIG_FOLDER_PATH = "/mnt/e/projects/Cquirrel_implement/resource/config"
 LOG_FOLDER_PATH = "/mnt/e/projects/Cquirrel_implement/resource/logs"
-CONFIG_FILE_NAME = "config_2_FIFO.ini"
+CONFIG_FILE_NAME = "config_4_FIFO.ini"
 conf = configparser.ConfigParser()
 config_file_name = os.path.join(CONFIG_FOLDER_PATH, CONFIG_FILE_NAME)
 print(config_file_name)
@@ -22,14 +22,17 @@ if config_list.sort() != CONFIG_PARA.sort():
     raise Exception("config parameters should contain 'mode', 'scalefactor', 'islineitem', "
                     "'isorders', 'iscustomer', 'ispartsupp', 'ispart', 'issupplier', 'isnation', 'isregion'.")
 # log settings
-log_file_path = os.path.join(LOG_FOLDER_PATH, "log_{}_{}.txt".format(config['Mode'], config.getint('ScaleFactor')))
+log_file_path = os.path.join(LOG_FOLDER_PATH, "log_{}_{}.txt".format(config['Mode'], config['ScaleFactor']))
 log_file = open(log_file_path, "w")
 log_file.write("config_file_name: {}\n".format(config_file_name))
 def data_generator(config):
     # read the settings from file
-    scale_factor = config.getint('ScaleFactor')
-    if scale_factor <= 0:
-        raise ValueError("scale factor should be positive.")
+    scale_factor = config.getfloat('ScaleFactor')
+    if scale_factor >= 1:
+        scale_factor = config.getint('ScaleFactor')
+        # raise ValueError("scale factor should be positive.")
+    print("scale_factor:", scale_factor)
+    log_file.write("scale_factor: {}\n".format(scale_factor))
     mode = config['Mode']
     if mode != 'insertOnly' and mode != 'FIFO':
         raise ValueError("mode should be insertOnly or FIFO.")
@@ -70,8 +73,12 @@ def data_generator(config):
     tpch_tables = ['customer', 'lineitem', 'nation', 'orders', 'part', 'partsupp', 'region', 'supplier']
     tpch_tables_lines_num = [customer_size, lineitem_size, nation_size, orders_size, part_size, partsupp_size,
                              region_size, supplier_size]
-    tpch_tables_path = [os.path.join(data_file_path_prefix, x + ".tbl") for x in tpch_tables]
-
+    
+    
+    if scale_factor >= 1:
+        tpch_tables_path = [os.path.join(data_file_path_prefix, x + ".tbl") for x in tpch_tables]
+    else:
+        tpch_tables_path = [os.path.join(TABLES_FOLDER_PATH,'1', x + ".tbl") for x in tpch_tables]
     # check if the files exists or not
     for ttp in tpch_tables_path:
         if not os.path.exists(ttp):
@@ -83,12 +90,12 @@ def data_generator(config):
     # check the lines number of files
     print("*************************************")
     log_file.write("check the lines number of files:\n")
-    for index in range(len(tpch_tables_path)):
-        with open(tpch_tables_path[index], 'r') as f:
-            lines_num = len(f.readlines())
-            tpch_tables_lines_num[index] = lines_num
-            print("{} has {} lines".format(tpch_tables_path[index], lines_num))
-            log_file.write("{} has {} lines\n".format(tpch_tables_path[index], lines_num))
+    # for index in range(len(tpch_tables_path)):
+    #     with open(tpch_tables_path[index], 'r') as f:
+    #         lines_num = len(f.readlines())
+    #         tpch_tables_lines_num[index] = lines_num
+    #         print("{} has {} lines".format(tpch_tables_path[index], lines_num))
+    #         log_file.write("{} has {} lines\n".format(tpch_tables_path[index], lines_num))
 
     if mode == 'insertOnly':
         window_size = tpch_tables_lines_num[tpch_tables.index('lineitem')]
@@ -97,25 +104,44 @@ def data_generator(config):
     else:
         raise ValueError("mode should be insertOnly or FIFO.")
     # open the files
-    lineitem = open(os.path.join(data_file_path_prefix, "lineitem.tbl"), "r")
-    orders = open(os.path.join(data_file_path_prefix, "orders.tbl"), "r")
-    partsupp = open(os.path.join(data_file_path_prefix, "partsupp.tbl"), "r")
-    part = open(os.path.join(data_file_path_prefix, "part.tbl"), "r")
-    supplier = open(os.path.join(data_file_path_prefix, "supplier.tbl"), "r")
-    customer = open(os.path.join(data_file_path_prefix, "customer.tbl"), "r")
-    nation = open(os.path.join(data_file_path_prefix, "nation.tbl"), "r")
-    region = open(os.path.join(data_file_path_prefix, "region.tbl"), "r")
+    if scale_factor >= 1:
+        lineitem = open(os.path.join(data_file_path_prefix, "lineitem.tbl"), "r")
+        orders = open(os.path.join(data_file_path_prefix, "orders.tbl"), "r")
+        partsupp = open(os.path.join(data_file_path_prefix, "partsupp.tbl"), "r")
+        part = open(os.path.join(data_file_path_prefix, "part.tbl"), "r")
+        supplier = open(os.path.join(data_file_path_prefix, "supplier.tbl"), "r")
+        customer = open(os.path.join(data_file_path_prefix, "customer.tbl"), "r")
+        nation = open(os.path.join(data_file_path_prefix, "nation.tbl"), "r")
+        region = open(os.path.join(data_file_path_prefix, "region.tbl"), "r")
 
-    # delete = (window_size != 0)
-    lineitem_d = open(os.path.join(data_file_path_prefix, "lineitem.tbl"), "r")
-    orders_d = open(os.path.join(data_file_path_prefix, "orders.tbl"), "r")#
-    partsupp_d = open(os.path.join(data_file_path_prefix, "partsupp.tbl"), "r")#
-    part_d = open(os.path.join(data_file_path_prefix, "part.tbl"), "r")#
-    supplier_d = open(os.path.join(data_file_path_prefix, "supplier.tbl"), "r")#
-    customer_d = open(os.path.join(data_file_path_prefix, "customer.tbl"), "r")#
-    nation_d = open(os.path.join(data_file_path_prefix, "nation.tbl"), "r")#
-    region_d = open(os.path.join(data_file_path_prefix, "region.tbl"), "r")#
+        # delete = (window_size != 0)
+        lineitem_d = open(os.path.join(data_file_path_prefix, "lineitem.tbl"), "r")
+        orders_d = open(os.path.join(data_file_path_prefix, "orders.tbl"), "r")#
+        partsupp_d = open(os.path.join(data_file_path_prefix, "partsupp.tbl"), "r")#
+        part_d = open(os.path.join(data_file_path_prefix, "part.tbl"), "r")#
+        supplier_d = open(os.path.join(data_file_path_prefix, "supplier.tbl"), "r")#
+        customer_d = open(os.path.join(data_file_path_prefix, "customer.tbl"), "r")#
+        nation_d = open(os.path.join(data_file_path_prefix, "nation.tbl"), "r")#
+        region_d = open(os.path.join(data_file_path_prefix, "region.tbl"), "r")#
+    else:
+        lineitem = open(os.path.join(TABLES_FOLDER_PATH,'1', "lineitem.tbl"), "r")
+        orders = open(os.path.join(TABLES_FOLDER_PATH,'1', "orders.tbl"), "r")
+        partsupp = open(os.path.join(TABLES_FOLDER_PATH,'1', "partsupp.tbl"), "r")
+        part = open(os.path.join(TABLES_FOLDER_PATH,'1', "part.tbl"), "r")
+        supplier = open(os.path.join(TABLES_FOLDER_PATH,'1', "supplier.tbl"), "r")
+        customer = open(os.path.join(TABLES_FOLDER_PATH,'1', "customer.tbl"), "r")
+        nation = open(os.path.join(TABLES_FOLDER_PATH,'1', "nation.tbl"), "r")
+        region = open(os.path.join(TABLES_FOLDER_PATH,'1', "region.tbl"), "r")
 
+        # delete = (window_size != 0)
+        lineitem_d = open(os.path.join(TABLES_FOLDER_PATH,'1', "lineitem.tbl"), "r")
+        orders_d = open(os.path.join(TABLES_FOLDER_PATH,'1', "orders.tbl"), "r")#
+        partsupp_d = open(os.path.join(TABLES_FOLDER_PATH,'1', "partsupp.tbl"), "r")#
+        part_d = open(os.path.join(TABLES_FOLDER_PATH,'1', "part.tbl"), "r")#
+        supplier_d = open(os.path.join(TABLES_FOLDER_PATH,'1', "supplier.tbl"), "r")#
+        customer_d = open(os.path.join(TABLES_FOLDER_PATH,'1', "customer.tbl"), "r")#
+        nation_d = open(os.path.join(TABLES_FOLDER_PATH,'1', "nation.tbl"), "r")#
+        region_d = open(os.path.join(TABLES_FOLDER_PATH,'1', "region.tbl"), "r")#
    
     # init the count number
     count = 0
@@ -164,7 +190,9 @@ def data_generator(config):
     region_window = []
     # write the first part
     last_progress_milestone=0
-    while line_lineitem:
+    while line_lineitem :
+        if scale_factor < 1 and count >= lineitem_size:
+            break
         count = count + 1
         delete_count = delete_count + 1
         current_milestone = int(count / lineitem_size * 10)
@@ -172,13 +200,13 @@ def data_generator(config):
             print(f"Progress: {current_milestone * 10}%")
             last_progress_milestone = current_milestone
         if isLineitem:
-            if mode == 'FIFO':
+            if mode == 'FIFO' and scale_factor == 1:
                 lineItem_window.append(line_lineitem)
             write_to_output_and_kafka("+LI" + line_lineitem)
         line_lineitem = lineitem.readline()
         if delete_count > 0:
             if isLineitem:
-                if mode == 'FIFO':
+                if mode == 'FIFO' and scale_factor == 1:
                     lineItem_window.pop(0)
                 write_to_output_and_kafka("-LI" + line_lineitem_d)
             line_lineitem_d = lineitem_d.readline()
@@ -186,14 +214,14 @@ def data_generator(config):
         if count * orders_size / lineitem_size > orders_count and line_orders:
             orders_count = orders_count + 1
             if isOrders:
-                if mode == 'FIFO':
+                if mode == 'FIFO' and scale_factor == 1:
                     orders_window.append(line_orders)
                 write_to_output_and_kafka("+OR" + line_orders)
             line_orders = orders.readline()
             if delete_count * orders_size / lineitem_size > orders_delete_count and line_orders_d:
                 orders_delete_count = orders_delete_count + 1
                 if isOrders:
-                    if mode == 'FIFO':
+                    if mode == 'FIFO' and scale_factor == 1:
                         orders_window.pop(0)
                     write_to_output_and_kafka("-OR" + line_orders_d)
                 line_orders_d = orders_d.readline()
@@ -201,14 +229,14 @@ def data_generator(config):
         if count * customer_size / lineitem_size > customer_count and line_customer:
             customer_count = customer_count + 1
             if isCustomer:
-                if mode == 'FIFO':
+                if mode == 'FIFO' and scale_factor == 1:
                     customer_window.append(line_customer)
                 write_to_output_and_kafka("+CU" + line_customer)
             line_customer = customer.readline()
             if delete_count * customer_size / lineitem_size > customer_delete_count and line_customer_d:
                 customer_delete_count = customer_delete_count + 1
                 if isCustomer:
-                    if mode == 'FIFO':
+                    if mode == 'FIFO' and scale_factor == 1:
                         customer_window.pop(0)
                     write_to_output_and_kafka("-CU" + line_customer_d)
                 line_customer_d = customer_d.readline()
@@ -216,14 +244,14 @@ def data_generator(config):
         if count * part_size / lineitem_size > part_count and line_part:
             part_count = part_count + 1
             if isPart:
-                if mode == 'FIFO':
+                if mode == 'FIFO' and scale_factor == 1:
                     part_window.append(line_part)
                 write_to_output_and_kafka("+PA" + line_part)
             line_part = part.readline()
             if delete_count * part_size / lineitem_size > part_delete_count and line_part_d:
                 part_delete_count = part_delete_count + 1
                 if isPart:
-                    if mode == 'FIFO':
+                    if mode == 'FIFO' and scale_factor == 1:
                         part_window.pop(0)
                     write_to_output_and_kafka("-PA" + line_part_d)
                 line_part_d = part_d.readline()
@@ -231,14 +259,14 @@ def data_generator(config):
         if count * supplier_size / lineitem_size > supplier_count and line_supplier:
             supplier_count = supplier_count + 1
             if isSupplier:
-                if mode == 'FIFO':
+                if mode == 'FIFO' and scale_factor == 1:
                     supplier_window.append(line_supplier)
                 write_to_output_and_kafka("+SU" + line_supplier)
             line_supplier = supplier.readline()
             if delete_count * supplier_size / lineitem_size > supplier_delete_count and line_supplier_d:
                 supplier_delete_count = supplier_delete_count + 1
                 if isSupplier:
-                    if mode == 'FIFO':
+                    if mode == 'FIFO'  and scale_factor == 1:
                         supplier_window.pop(0)
                     write_to_output_and_kafka("-SU" + line_supplier_d)
                 line_supplier_d = supplier_d.readline()
@@ -246,14 +274,14 @@ def data_generator(config):
         if count * partsupp_size / lineitem_size > partsupp_count and line_partsupp:
             partsupp_count = partsupp_count + 1
             if isPartSupp:
-                if mode == 'FIFO':
+                if mode == 'FIFO' and scale_factor == 1:
                     partsupp_window.append(line_partsupp)
                 write_to_output_and_kafka("+PS" + line_partsupp)
             line_partsupp = partsupp.readline()
             if delete_count * partsupp_size / lineitem_size > partsupp_delete_count and line_partsupp_d:
                 partsupp_delete_count = partsupp_delete_count + 1
                 if isPartSupp:
-                    if mode == 'FIFO':
+                    if mode == 'FIFO'  and scale_factor == 1:
                         partsupp_window.pop(0)
                     write_to_output_and_kafka("-PS" + line_partsupp_d)
                 line_partsupp_d = partsupp_d.readline()
@@ -261,14 +289,14 @@ def data_generator(config):
         if count * nation_size / lineitem_size > nation_count and line_nation:
             nation_count = nation_count + 1
             if isNation:
-                if mode == 'FIFO':
+                if mode == 'FIFO' and scale_factor == 1:
                     nation_window.append(line_nation)
                 write_to_output_and_kafka("+NA" + line_nation)
             line_nation = nation.readline()
             if delete_count * nation_size / lineitem_size > nation_delete_count and line_nation_d:
                 nation_delete_count = nation_delete_count + 1
                 if isNation:
-                    if mode == 'FIFO':
+                    if mode == 'FIFO'  and scale_factor == 1:
                         nation_window.pop(0)
                     write_to_output_and_kafka("-NA" + line_nation_d)
                 line_nation_d = nation_d.readline()
@@ -276,14 +304,14 @@ def data_generator(config):
         if count * region_size / lineitem_size > region_count and line_region:
             region_count = region_count + 1
             if isRegion:
-                if mode == 'FIFO':
+                if mode == 'FIFO'and scale_factor == 1:
                     region_window.append(line_region)
                 write_to_output_and_kafka("+RI" + line_region)
             line_region = region.readline()
             if delete_count * region_size / lineitem_size > region_delete_count and line_region_d:
                 region_delete_count = region_delete_count + 1
                 if isRegion:
-                    if mode == 'FIFO':
+                    if mode == 'FIFO'  and scale_factor == 1:
                         region_window.pop(0)
                     write_to_output_and_kafka("-RI" + line_region_d)
                 line_region_d = region_d.readline()
@@ -380,7 +408,7 @@ def data_generator(config):
     log_file.write("output file lines number: {}\n".format(res_lines_num))
     log_file.write("finished: {}\n".format(config_file_name))
     log_file.write("outputfile: {}\n".format(output_file_path))
-    if mode=='FIFO':
+    if mode=='FIFO' and scale_factor == 1:
         print("\n=== Save Window Data===")
         log_file.write("\n=== Save Window Data===\n")
         WINDOW_FOLDER_PATH=os.path.join(data_file_path_prefix, "window_data")

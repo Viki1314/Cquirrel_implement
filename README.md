@@ -39,23 +39,20 @@ I run the experience in Windows wsl2.
 ### Software Dependencies
 Here are the software version in which we run the cquirrel experience.
 - java 1.8 !!!
+- flink 1.11.2
+- gcc
 
-<!-- Python 3.8.5  
-
+<!-- 
 Scala 2.12.13
 Maven 3.6.3   
 sbt 1.3.13  
 yarn 1.22.10  
-Flink 1.11.2
-- flink 2.22
-- python 3.12.3
-
 - scala 2.11.12
 - maven 3.8.7
 - sbt
 - yarn 1.22.22
 - gcc 13.3.0
-- node 18.19.1 -->
+- node 18.19.1  -->
 ## Directory Description
 * `mycode/DataGenerator.py` : This is the tool to generate our input data files from TPCH tables. We can edit config file to meet our requirements for the input data.
 * `resource/codegen.jar` : This is the codegen components, which can transform a sql to a flink program.
@@ -99,12 +96,12 @@ Flink 1.11.2
     cp *.tbl /mnt/e/projects/Cquirrel_implement/resource/tpch/4
     ```
 
-8. In the `mycode/DataGenerator.py`, generate the input data. The config files are in `resource/config` directory. The generation logs are in `resource/logs` directory.The output file are in `resource/tpch/{SF}` directory.(Requirement:sql should not contain date computation,like 'date '[DATE]' + interval '3' month')
+8. In the `mycode/DataGenerator.py`, generate the input data. The config files are in `resource/config` directory. The generation logs are in `resource/logs` directory.The output file are in `resource/tpch/{SF}` directory.
   ```bash 
   python mycode/DataGenerator.py
   ```
 ### sql2jar
-use `resource/codegen.jar` to transfer sql query to `generated-code-1.0-SNAPSHOT-jar-with-dependencies.jar` for flink.
+use `resource/codegen.jar` to transfer sql query to `generated-code-1.0-SNAPSHOT-jar-with-dependencies.jar` for flink.(Requirement:sql should not contain date computation,like 'date '[DATE]' + interval '3' month')
   ```bash
   python mycode/sql2jar.py
   ```
@@ -112,28 +109,25 @@ use `resource/codegen.jar` to transfer sql query to `generated-code-1.0-SNAPSHOT
 1. Download the Apache Flink and unzip the package into your computer. 
 2. Change the directory into `flink-1.11.2`, and start the flink cluster. If flink starts successfully, [http://localhost:8081](http://localhost:8081/#/overview) will show overview of flink and details of running tasks.
   ```bash
-  cd /mnt/e/software/flink1/flink-1.11.2
-  bash bin/start-cluster.sh
+  bash /mnt/e/software/flink1/flink-1.11.2/bin/start-cluster.sh
   ```
 3. run jar on flink through `./myCode/flink_run.py`:
 ```bash
-/mnt/e/software/flink1/flink-1.11.2/bin/flink run /mnt/d/SCUT/HK_Msc/HKUST_IT/ip_flink/Cquirrel_implement/app/generated-code/target/generated-code-1.0-SNAPSHOT-jar-with-dependencies.jar
-
 python ./myCode/flink_run.py
 ```
-### Clean output data
-
-### Prepare mysql
+### Correctness Verification
+#### Clean output data
+We need to standardize the output format, as Flink's raw output contains parentheses in each line and uses '|' as the delimiter.
+```bash
+python ./myCode/flink_output_process.py
+```
+#### Prepare mysql
 1. login mysql:
 `sudo mysql -u root -p`
 2. create 6 databases;
   ```sql
   CREATE DATABASE tpch1;
-  CREATE DATABASE tpch2;
-  CREATE DATABASE tpch4;
   CREATE DATABASE tpch1_FIFO;
-  CREATE DATABASE tpch2_FIFO;
-  CREATE DATABASE tpch4_FIFO;
   show databases;
   use tpch1;
   use tpch1_FIFO;
@@ -141,16 +135,68 @@ python ./myCode/flink_run.py
   3. create tables in mysql:
   `source /mnt/e/projects/Cquirrel_implement/myCode/tpch_schema.sql`
   4. load tpch data:
-  ```
+  ```bash
   source /mnt/e/projects/Cquirrel_implement/myCode/tpch1_insertOnly.sql
   source /mnt/e/projects/Cquirrel_implement/myCode/tpch1_FIFO.sql
   ```
   5. run sql10 on mysql.
-  ```
+  ```bash
   source  /mnt/e/projects/Cquirrel_implement/myCode/sql10.sql
   ```
-## Experience Result
-|exp|flink runtime|Consistency with MySQL(within 0.01)(match_cnt/total_cnt)|
+  6. load flink output to mysql
+  ```bash
+  source /mnt/e/projects/Cquirrel_implement/myCode/flink2mysql_1_insertOnly.sql
+  source /mnt/e/projects/Cquirrel_implement/myCode/flink2mysql_1_FIFO.sql
+  ```
+  7. compare sql10 and flink output
+  ```bash
+  source /mnt/e/projects/Cquirrel_implement/myCode/compare_1_insertOnly.sql
+  source /mnt/e/projects/Cquirrel_implement/myCode/compare_1_FIFO.sql
+  ```
+## Experience
+### Environment
+we use local computer to finish experience, and the environment are shown below:
+|Component|Specification|
+|---|---|
+|OS| Window WSL2|
+|CPU|Intel(R) Core(TM) i7-9750H CPU@ 2.60GHz|
+|Memory|16GB|
+
+and flink setting are:
+
+|Parameter|Value|
+|---|---|
+|jobmanager.memory.process.size| 1600m |
+|taskmanager.memory.process.size|8012m|
+|taskmanager.numberOfTaskSlots|4|
+|parallelism.default|4|
+### Dataset & Query
+we use tpch.dbgen tool to generate data.we generate 1,2,4GB data and sample 0.5,0.25 data from 1GB data since. The minimum size that dbgen supports is 1 GB.
+And we select Q10,where '[DATE]' is '1993-10-01'.
+|Scale Factor|#lineitem|#customer|#nation|#orders|
+|---|---|---|---|---|
+|0.25|||||
+|0.5|||||
+|1|6001215|150000|25|1500000|
+|2|11997996|299950|25|2999499|
+|4|23996604|599916|25|5999151|
+### Result
+#### Correctness Verification
+|exp|Consistency with MySQL(within 0.01)(match_cnt/total_cnt)|
+|---|---|
+|1_insertOnly|37967/37967=100%|
+|1_FIFO|100%|
+
+####  Performance Evaluation
+|exp|flink runtime(parall:4)|flink runtime(parall:1)|
 |---|---|---|
-|1_insertOnly|3m 10s|37967/37967=100%|
-|1_FIFO|1m36s||
+|0.25_insertOnly|||
+|0.25_FIFO|||
+|0.5_insertOnly||||
+|0.5_FIFO||||
+|1_insertOnly|204717 ms||
+|1_FIFO|96679 ms||
+|2_insertOnly|OOM||
+|2_FIFO|930866 ms||
+|4_insertOnly|OOM||
+|4_FIFO|||
