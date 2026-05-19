@@ -175,8 +175,8 @@ we use tpch.dbgen tool to generate data.we generate 1,2,4GB data and sample 0.5,
 And we select Q10,where '[DATE]' is '1993-10-01'.
 |Scale Factor|#lineitem|#customer|#nation|#orders|
 |---|---|---|---|---|
-|0.25|||||
-|0.5|||||
+|0.25 | 1500000  | 37500 | 25  | 375000 | 
+|0.5  | 3000000 | 75000 | 25  | 750000|
 |1|6001215|150000|25|1500000|
 |2|11997996|299950|25|2999499|
 |4|23996604|599916|25|5999151|
@@ -190,13 +190,13 @@ And we select Q10,where '[DATE]' is '1993-10-01'.
 ####  Performance Evaluation
 |exp|flink runtime(parall:4)|flink runtime(parall:1)|
 |---|---|---|
-|0.25_insertOnly|||
-|0.25_FIFO|||
-|0.5_insertOnly||||
-|0.5_FIFO||||
-|1_insertOnly|204717 ms||
-|1_FIFO|96679 ms||
-|2_insertOnly|OOM||
-|2_FIFO|930866 ms||
-|4_insertOnly|OOM||
-|4_FIFO|||
+|0.25_insertOnly|16138 ms|19276 ms|
+|0.25_FIFO|31886 ms|22572 ms|
+|0.5_insertOnly|37613 ms|63178 ms|
+|0.5_FIFO|51671 ms|41969 ms|
+|1_insertOnly|204717 ms|257513 ms|
+|1_FIFO|96679 ms|92572 ms|
+|2_insertOnly|OOM|OOM|
+|2_FIFO|930866 ms|335134 ms|
+|4_insertOnly|OOM| OOM|
+|4_FIFO|OOM|OOM|
