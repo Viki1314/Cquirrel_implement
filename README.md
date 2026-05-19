@@ -182,7 +182,7 @@ And we select Q10,where '[DATE]' is '1993-10-01'.
 |4|23996604|599916|25|5999151|
 ### Result
 #### Correctness Verification
-|exp|Consistency with MySQL(within 0.01)(match_cnt/total_cnt)|
+|exp|Consistency with MySQL(within 0.01)|
 |---|---|
 |1_insertOnly|37967/37967=100%|
 |1_FIFO|100%|
